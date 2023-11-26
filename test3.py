@@ -33,8 +33,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 model.fit(X_train, y_train)
 
 # Estimate offers for the diamonds in the offers.csv
-offers_data_filtered = offers_data[relevant_columns[:-1]].fillna('Unknown')
-estimated_offers = model.predict(offers_data_filtered)
+estimated_offers = model.predict(offers_data)
 offers_data['Estimated_Offers'] = estimated_offers
 
 # Apply rules for conflict diamonds and offer amount range
