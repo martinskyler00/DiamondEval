@@ -36,10 +36,18 @@ model.fit(X_train, y_train)
 estimated_offers = model.predict(offers_data)
 offers_data['Estimated_Offers'] = estimated_offers
 
+# Calculate the mean and standard deviation of the offer amounts
+mean_offer = offers_data['Estimated_Offers'].mean()
+std_dev_offer = offers_data['Estimated_Offers'].std()
+
+# Define the acceptable range as one standard deviation from the mean
+lower_bound = mean_offer - std_dev_offer
+upper_bound = mean_offer + std_dev_offer
+
 # Apply rules for conflict diamonds and offer amount range
 conflict_regions = ['Angola', 'DR Congo', 'Zimbabwe']
 offers_data['Adjusted_Offers'] = offers_data.apply(
-    lambda row: 0 if row['Regions'] in conflict_regions or not (5000 <= row['Estimated_Offers'] <= 15000) else row['Estimated_Offers'],
+    lambda row: 0 if row['Regions'] in conflict_regions or not (lower_bound <= row['Estimated_Offers'] <= upper_bound) else row['Estimated_Offers'],
     axis=1
 )
 
@@ -60,9 +68,9 @@ for _, row in sorted_diamonds.iterrows():
     else:
         break
 
-offers_data['Final_Offers'] = offers_data.apply(
+offers_data['Offers'] = offers_data.apply(
     lambda row: row['Adjusted_Offers'] if row['id'] in selected_diamonds else 0, axis=1
 )
 
 # Save the final version of offers.csv
-offers_data.to_csv('goofytest2_offers.csv', index=False)
+offers_data.to_csv('final_offers.csv', index=False)
