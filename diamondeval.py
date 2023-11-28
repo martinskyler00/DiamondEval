@@ -32,21 +32,15 @@ model.fit(x_train, y_train)
 estimated_offers = model.predict(offers_data)
 offers_data['Estimated_Offers'] = estimated_offers
 
-mean_offer = offers_data['Estimated_Offers'].mean()
-std_dev_offer = offers_data['Estimated_Offers'].std()
-
-lower_bound = mean_offer - std_dev_offer
-upper_bound = mean_offer + std_dev_offer
-
 conflict_regions = ['Angola', 'DR Congo', 'Zimbabwe']
 offers_data['Adjusted_Offers'] = offers_data.apply(
-    lambda row: 0 if row['Regions'] in conflict_regions or not (lower_bound <= row['Estimated_Offers'] <= upper_bound) else row['Estimated_Offers'],
+    lambda row: 0 if row['Regions'] in conflict_regions or not (5000 <= row['Estimated_Offers'] <= 15000) else row['Estimated_Offers'],
     axis = 1
 )
 
 merged_data = offers_data.merge(training_data[['id', 'Retail']], on = 'id', how = 'left')
-valid_offers = merged_data[merged_data["Adjusted Offers"] > 0]
-valid_offers['Potential_Income'] = valid_offers['Retail'] - vaild_offers['Adjusted_Offers']
+valid_offers = merged_data[merged_data["Adjusted_Offers"] > 0]
+valid_offers['Potential_Income'] = valid_offers['Retail'] - valid_offers['Adjusted_Offers']
 sorted_diamonds = valid_offers.sort_values(by = 'Potential_Income', ascending = False)
 
 budget = 5_000_000
